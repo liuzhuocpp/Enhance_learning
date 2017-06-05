@@ -28,7 +28,7 @@ class BoardState:
         return self.state1 == other.state1 and self.state2 == other.state2
         # self.chessTuple= ()
     def __hash__(self):
-        return (self.state1 << (N * N)) + self.state2
+        return ((self.state1 << (N * N)) + self.state2) &((1 << 32) - 1)
     def getChess(self, i):
 
         if BoardState._getValue(self.state1, i):
@@ -56,17 +56,13 @@ class BoardState:
         
         if v == EmptyChess:
             self.state1 = BoardState._getSetValue(self.state1, i, 0)
+            self.state2 = BoardState._getSetValue(self.state2, i, 0)
         else:
             self.state1 = BoardState._getSetValue(self.state1, i, 1)
             if v == BlackChess:
                 self.state2 = BoardState._getSetValue(self.state2, i, 0)
             else:
                 self.state2 = BoardState._getSetValue(self.state2, i, 1)
-
-
-        # oldV = self.getChess(i)
-
-        # self.state = self.state + ((3 ** i) * (v - oldV))
 
     def clear(self):
         self.state1 = 0  
@@ -107,7 +103,7 @@ class BoardState:
                         if nextState not in ans:
                             # print nextState.chessTuple, "JJJ"
                             ans.add(nextState)
-                            # q.append((nextState, cntChessType ^ 1))
+                            # q.append((nextState, oppositeChess(cntChessType)))
                             if not cntState.checkWin(cntChessType, x, y):
                                 q.append((nextState, oppositeChess(cntChessType)))
         
@@ -314,8 +310,8 @@ Button(frame, text='Hello Button', command=resetBoard).grid(row = 0, column = 0)
 
 allStates = BoardState.calculateAllStates(BlackChess)
 
-# allStates = list(allStates)
-# print len(allStates)
+allStates = list(allStates)
+print len(allStates)
 
 # def myCmp(x, y):
 #     if x.state1 != y.state1:
@@ -324,7 +320,7 @@ allStates = BoardState.calculateAllStates(BlackChess)
 # allStates.sort( cmp = myCmp)
 # for v in allStates:
 #     print v.state1, v.state2, "kkk"
-    # print v.toChessTuple()
+#     print v.toChessTuple()
 
 
 
