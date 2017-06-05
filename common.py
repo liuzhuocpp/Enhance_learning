@@ -25,3 +25,6 @@ def oppositeChess(chess):
         return WhiteChess
     else:
         return BlackChess
+        
+def makeChess(pieceType, x, y):
+    return (pieceType, x, y)
