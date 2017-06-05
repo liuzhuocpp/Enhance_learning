@@ -52,6 +52,8 @@ class BoardState:
         #     s /= 3
         # return s % 3
 
+    def getChessNumber(self):
+        return len(self.toChessTuple())
     def setChess(self, i, j, v):
         i = i * N + j
         if v == EmptyChess:
@@ -219,6 +221,8 @@ def playChessHandler(event):
                 else:
                     tkMessageBox.showinfo(title='aaa', message='黑棋获胜')
 
+            if boardState.getChessNumber() + 1 == N * N:
+                tkMessageBox.showinfo(title='aaa', message='平局')
             boardState.playChess(chess)
 
             currentPieceType  = oppositeChess(currentPieceType)
