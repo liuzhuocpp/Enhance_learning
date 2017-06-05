@@ -29,8 +29,8 @@ class BoardState:
         # self.chessTuple= ()
     def __hash__(self):
         return ((self.state1 << (N * N)) + self.state2) &((1 << 32) - 1)
-    def getChess(self, i):
-
+    def getChessType(self, i, j):
+        i = i * N + j
         if BoardState._getValue(self.state1, i):
             if BoardState._getValue(self.state2, i):
                 return WhiteChess
@@ -52,8 +52,8 @@ class BoardState:
         #     s /= 3
         # return s % 3
 
-    def setChess(self, i, v):
-        
+    def setChess(self, i, j, v):
+        i = i * N + j
         if v == EmptyChess:
             self.state1 = BoardState._getSetValue(self.state1, i, 0)
             self.state2 = BoardState._getSetValue(self.state2, i, 0)
@@ -72,7 +72,7 @@ class BoardState:
         ans = ()
         for i in xrange(N):
             for j in xrange(N):
-                c = self.getChess(i * N + j)
+                c = self.getChessType(i, j)
                 if c != EmptyChess:
                     ans += ((c, i, j),) 
 
@@ -128,17 +128,14 @@ class BoardState:
 
     def isContain(self, qx , qy):
 
-        # print "IS"
-        v = self.getChess(qx * N + qy)
-
-        # print "ISsss"
+        v = self.getChessType(qx, qy)
         if v != EmptyChess:
             return True
         return False
 
     def playChess(self, chess):
         t, x, y = chess
-        self.setChess(x * N + y, t)
+        self.setChess(x, y, t)
 
     def checkWin(self, pieceType, x, y):
 
