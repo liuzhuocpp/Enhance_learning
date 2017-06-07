@@ -17,16 +17,26 @@ class BoardState:
         return ((self.state1 << (N * N)) + self.state2) &((1 << 32) - 1)
 
     def __str__(self):
-        chessTuple = self.toChessTuple()
-        out = numpy.zeros((N, N), )
-        for chess in chessTuple :
-            t, x, y = chess
-            if t == WhiteChess:
-                out[x][y] = 2
-            elif t == BlackChess:
-                out[x][y] = 1
-            else:
-                print 'error'
+        # chessTuple = self.toChessTuple()
+        # out = numpy.zeros((N, N), )
+
+        out = ""
+        for x in xrange(N):
+            out += "["
+            for y in xrange(N):
+                t = self.getChessType(x, y)
+                if t == EmptyChess:
+                    out += " "
+                elif t == BlackChess:
+                    out += "B"
+                elif t == WhiteChess:
+                    out += "W"
+                else: assert(False)
+                if y != N - 1:
+                    out += ' '
+            out += "]"
+            if x != N - 1:
+                out += "\n\n"
         return str(out)
 
     def getChessType(self, i, j):
