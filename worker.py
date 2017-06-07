@@ -9,7 +9,7 @@ from Tkinter import *
 
 import tkMessageBox
 import copy
-
+import time
 
 from board_state import *
 from common import *
@@ -32,8 +32,7 @@ class Worker:
                 # print "FFFddd"
 
                 self.boardWindow.drawPiece(x, y, self.currentPieceType)
-                # print "check win before: " , x, y
-                if self.boardState.checkWin(self.currentPieceType, x, y):
+                if self.boardState.checkWin(chess):
                     if self.currentPieceType == WhiteChess:
                         tkMessageBox.showinfo(title='aaa', message='白棋获胜')
                     else:
@@ -65,4 +64,55 @@ class Worker:
 
 
 
+
+class MachineWorker:
+    def userPlayChessHandler(self, event):
+        x , y = event.x, event.y
+        print "clicked at", x, y
+
+        x = imageCor(x)
+        y = imageCor(y)
+
+        if isValidPos(x, y) :
+            chess = makeChess(WhiteChess, x, y)
+            if not self.boardState.isContain(x, y):
+                # print "FFFddd"
+                self.playChess(chess)
+                print "kkk"
+                time.sleep(1)
+                self.machinePlayChess()
+
+
+    def playChess(self, chess):
+        chessType, x, y = chess
+        self.boardWindow.drawPiece(x, y, chessType)
+        if self.boardState.checkWin(chess):
+            if chessType == WhiteChess:
+                tkMessageBox.showinfo(title='aaa', message='白棋获胜')
+            else:
+                tkMessageBox.showinfo(title='aaa', message='黑棋获胜')
+
+        if self.boardState.getChessNumber() + 1 == N * N:
+            tkMessageBox.showinfo(title='aaa', message='平局')
+        self.boardState.playChess(chess)
+
+    def machinePlayChess(self):
+        self.playChess(self.machinePolicy[self.boardState])
+
+    #机器是黑子并且是先手
+    def __init__(self, machinePolicy):
+        self.machinePolicy = machinePolicy
+        self.boardWindow = BoardWindow()
+        self.boardState = BoardState()
+        self.boardWindow.frame.bind("<Button-1>", self.userPlayChessHandler)        
+        self.boardWindow.drawBoard()
+        
+
+
+        
+        self.machinePlayChess()
+
+
+
+        mainloop()
 

@@ -19,6 +19,14 @@ BlackChess = 1
 WhiteChess = 2
 
 
+FirstWin = 0
+DrawChessboard = 1
+FirstLose = 2
+NotEnd = 3
+
+
+
+
 FirstChessType = BlackChess
 
 

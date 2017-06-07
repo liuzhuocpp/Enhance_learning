@@ -3,6 +3,7 @@
 
 from common import *
 import copy
+import numpy
 
 class BoardState:
 
@@ -14,6 +15,20 @@ class BoardState:
         # self.chessTuple= ()
     def __hash__(self):
         return ((self.state1 << (N * N)) + self.state2) &((1 << 32) - 1)
+
+    def __str__(self):
+        chessTuple = self.toChessTuple()
+        out = numpy.zeros((N, N), )
+        for chess in chessTuple :
+            t, x, y = chess
+            if t == WhiteChess:
+                out[x][y] = 2
+            elif t == BlackChess:
+                out[x][y] = 1
+            else:
+                print 'error'
+        return str(out)
+
     def getChessType(self, i, j):
         i = i * N + j
         if BoardState._getValue(self.state1, i):
@@ -22,6 +37,13 @@ class BoardState:
             else:
                 return BlackChess
         return EmptyChess
+
+    #以state之中下一个chess的新的state
+    @staticmethod
+    def makeNewState(state, chess):
+        state = copy.copy(state)
+        state.playChess(chess)
+        return state
 
 
     @staticmethod
@@ -67,33 +89,63 @@ class BoardState:
 
     # def __str__(self):
     #     return self.toChessTuple()
+    # 检查先手局面
 
+    def checkFirstSituatoin(self):
+        for x in xrange(N):
+            for y in xrange(N):
+                if self.isContain(x, y):
+                    cntChessType = self.getChessType(x, y)
+                    if self.checkWin((cntChessType, x, y)):
+                        if cntChessType == FirstChessType:
+                            return FirstWin
+                        else:
+                            return FirstLose
+        if self.getChessNumber() == N * N:
+            return DrawChessboard
+        return NotEnd
+
+
+    def isEnd(self):
+        return self.checkFirstSituatoin() != NotEnd
+
+    # 机器是先手
     @staticmethod
-    def calculateAllStates(firstChessType):
+    def calculateAllStates():
         ans = set()
-        q = [(BoardState(), firstChessType) ]
-        ans.add(BoardState())
+        # 局面状态，是否是一个边界状态
+        q = [BoardState() ]
+
+        def addState(state):
+            if state not in ans:
+                ans.add(state)
+
 
         while len(q) > 0:
+
             if len(ans) % 10000 == 0:
                 print len(ans), len(q)
 
-            cntState, cntChessType = q.pop()
-
+            cntState = q.pop()
+            ans.add(cntState)
+            if cntState.isEnd():
+                continue
             for x in xrange(N):
                 for y in xrange(N):
-                    cntChess = makeChess(cntChessType, x, y)
+                    if cntState.isContain(x, y):  continue
 
-                    if not cntState.isContain(x, y):                        
-                        nextState = copy.copy(cntState)
-                        nextState.playChess(cntChess)
+                    nextState = BoardState.makeNewState(cntState, makeChess(FirstChessType, x, y))
+
+                    if not nextState.isEnd():
+                        for nx in xrange(N):
+                            for ny in xrange(N):
+                                if  nextState.isContain(nx, ny): continue
+                                nextNextState = BoardState.makeNewState(nextState, makeChess(oppositeChess(FirstChessType), nx, ny))                                
+                                if nextNextState not in ans:
+                                    q.append(nextNextState)
+                    else:
                         if nextState not in ans:
-                            # print nextState.chessTuple, "JJJ"
-                            ans.add(nextState)
-                            # q.append((nextState, oppositeChess(cntChessType)))
-                            if not cntState.checkWin(cntChessType, x, y):
-                                q.append((nextState, oppositeChess(cntChessType)))
-        
+                            q.append(nextState)
         return ans
 
 
@@ -124,7 +176,10 @@ class BoardState:
         t, x, y = chess
         self.setChess(x, y, t)
 
-    def checkWin(self, pieceType, x, y):
+    # def checkTie(self, chess):
+    #     return len(self.toChessTuple()) + 1 == N * N
+
+    def checkWin(self, chess):
 
         def maxLength(posList, x, y, nx, ny):
             ans = 0
@@ -157,11 +212,9 @@ class BoardState:
 
 
 
-       #  print "XY----", x, y
-        thisPosList = []        
+        thisPosList = []
         for t, tx, ty in self.toChessTuple():
-            if t == pieceType:
+            if t == chess[0]:
                 thisPosList.append((tx, ty))
-       #  print "XY----", x, y
-        # print thisPosList, "KKK----------------------", (x, y)
-        return checkMulti(thisPosList, x, y, WinLength)
+
+        return checkMulti(thisPosList, chess[1], chess[2], WinLength)

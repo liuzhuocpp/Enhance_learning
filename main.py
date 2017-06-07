@@ -17,17 +17,24 @@ from common import *
 from board_window import *
 from worker import *
 
+from value_iteration import *
 
 
 
 
 
-allStates = BoardState.calculateAllStates(BlackChess)
 
-allStates = list(allStates)
-print len(allStates)
 
-worker = Worker()
+
+
+
+
+
+
+policy = valueIterate(N * N, 0.1)
+
+# worker = Worker()
+worker = MachineWorker(policy)
 
 
 
