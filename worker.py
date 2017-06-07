@@ -111,8 +111,11 @@ class MachineWorker:
 
         
         self.machinePlayChess()
-
-
-
+        Button(self.boardWindow.frame, text='reset', command= self.reset).grid(row = 0, column = 0)
+        
         mainloop()
 
+    def reset(self):
+        self.boardWindow.reset()
+        self.boardState.clear()
+        self.machinePlayChess()
