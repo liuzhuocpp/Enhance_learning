@@ -36,7 +36,7 @@ def valueIterate(T, delta):
     for s in allStates:
         V[s] = 0.0        
 
-    TMP = 0
+    policyModifiedNumber = 0
 
 
     t = 1.0
@@ -80,9 +80,9 @@ def valueIterate(T, delta):
                     if _V[s] < nextValueSum:
                         _V[s] = nextValueSum
                         if not policy.has_key(s) or policy[s] != nextChess:                            
-                            TMP+=1
-                            if TMP % 1000 == 0:
-                                print 'hhh', TMP
+                            policyModifiedNumber+=1
+                            if policyModifiedNumber % 1000 == 0:
+                                print 'policyModifiedNumber: ', policyModifiedNumber, _V[s]
                             policy[s] = nextChess
 
             if _V[s] < 0.0:

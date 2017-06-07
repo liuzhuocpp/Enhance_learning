@@ -31,7 +31,7 @@ from value_iteration import *
 
 
 
-policy = valueIterate(N * N, 0.1)
+policy = valueIterate(N * N, 0.01)
 
 # worker = Worker()
 worker = MachineWorker(policy)
