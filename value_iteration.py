@@ -28,17 +28,17 @@ def R(boardState, selfChessType = FirstChessType):
 
 def valueIterate(T, delta):
 
-    # watchedState = BoardState()
-    # watchedState.playChess(makeChess(BlackChess, 0, 0))
-    # watchedState.playChess(makeChess(BlackChess, 0, 1))
-    # watchedState.playChess(makeChess(WhiteChess, 0, 2)) 
+    watchedState = BoardState()
+    watchedState.playChess(makeChess(BlackChess, 0, 0))
+    watchedState.playChess(makeChess(BlackChess, 0, 1))
+    watchedState.playChess(makeChess(WhiteChess, 0, 2)) 
 
-    # # watchedState.playChess(makeChess(WhiteChess, 1, 0))
-    # # watchedState.playChess(makeChess(BlackChess, 1, 1))
-    # watchedState.playChess(makeChess(BlackChess, 1, 2))
+    # watchedState.playChess(makeChess(WhiteChess, 1, 0))
+    # watchedState.playChess(makeChess(BlackChess, 1, 1))
+    watchedState.playChess(makeChess(BlackChess, 1, 2))
 
-    # watchedState.playChess(makeChess(WhiteChess, 2, 0))
-    # watchedState.playChess(makeChess(WhiteChess, 2, 1))       
+    watchedState.playChess(makeChess(WhiteChess, 2, 0))
+    watchedState.playChess(makeChess(WhiteChess, 2, 1))       
     # watchedState.playChess(makeChess(WhiteChess, 2, 2))
 
 
@@ -63,7 +63,8 @@ def valueIterate(T, delta):
                 _V[s] = 0.0
                 continue
 
-            _V[s] = -111.0 
+            _V[s] = -111.0
+            s_policy = None
             for x in xrange(N):
                 for y in xrange(N):
                     if  s.isContain(x, y): continue
@@ -91,15 +92,20 @@ def valueIterate(T, delta):
 
                     if _V[s] < nextValueSum:
                         _V[s] = nextValueSum
-                        if not policy.has_key(s) or policy[s] != nextChess:                            
-                            policyModifiedNumber+=1
-                            if policyModifiedNumber % 1000 == 0:
-                                print 'policyModifiedNumber: ', policyModifiedNumber, _V[s]
+
+                        if s_policy == None or s_policy != nextChess:                            
+                            s_policy = nextChess
+                            
+
 
                                 # if s == watchedState:
+            if not policy.has_key(s) or policy[s] != s_policy:
+                policy[s] = s_policy
+                policyModifiedNumber+=1
+                if policyModifiedNumber % 1000 == 0:
+                    print 'policyModifiedNumber: ', policyModifiedNumber, _V[s]
 
-
-                            policy[s] = nextChess
+                            
 
             if _V[s] < 0.0:
                 print s, "jjjj"
@@ -110,15 +116,16 @@ def valueIterate(T, delta):
         # print 'haha\n'
         # print watchedState, _V[watchedState], "\n"
 
-        print "max diff", maxDiff, t
+        
 
         t += 1.0
         if maxDiff < delta:
             break
         else:
             V = _V
+        # break
 
-
+        print "max diff", maxDiff, t, V[watchedState]
 
 
 
